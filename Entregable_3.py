@@ -20,7 +20,7 @@ frecuencia_departamentos = dataset['DEPARTAMENTO'].value_counts()
 
 # Diseño del tablero
 app.layout = html.Div(style={'backgroundColor': 'black', 'padding': '20px'}, children=[
-    html.H1("DASHBOARD CRÍMENES EN COLOMBIA", style={'textAlign': 'center', 'color': 'white', 'fontSize': '40px', 'fontFamily': 'Courier New TUR'}),
+    html.H1("CRÍMENES EN COLOMBIA POR AÑOS", style={'textAlign': 'center', 'color': 'white', 'fontSize': '40px', 'fontFamily': 'Courier New TUR'}),
     
     # Primera fila de gráficas
     html.Div([
@@ -40,12 +40,17 @@ app.layout = html.Div(style={'backgroundColor': 'black', 'padding': '20px'}, chi
             )
         ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'}), 
         
-        # Gráfico de dispersión
+        # Gráfico de Barras
         html.Div([
             dcc.Graph(
-                id='scatter-plot',
-                figure=px.scatter(dataset, x='GENERO', y='CANTIDAD', title='Gráfico de Dispersión de Crímenes por Género')
-                .update_layout(
+                id='bar-graph-gender',
+                figure=px.bar(
+                    dataset.groupby('GENERO')['CANTIDAD'].sum().reset_index(), 
+                    x='GENERO', 
+                    y='CANTIDAD', 
+                    title='Crímenes por Género',
+                    color_discrete_sequence=['#13294B']
+                ).update_layout(
                     width=700, 
                     height=400, 
                     plot_bgcolor='#1A6DB2', 
@@ -54,7 +59,6 @@ app.layout = html.Div(style={'backgroundColor': 'black', 'padding': '20px'}, chi
                     xaxis=dict(showgrid=False), 
                     yaxis=dict(showgrid=False)
                 )
-                .update_traces(marker=dict(color='#13294B'))
             )
         ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'})
     ]),  
@@ -98,5 +102,6 @@ app.layout = html.Div(style={'backgroundColor': 'black', 'padding': '20px'}, chi
         ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'})
     ]),  
 ])
+
 if __name__ == '__main__':
     app.run_server(debug=True)
